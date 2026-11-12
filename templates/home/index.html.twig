@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Bienvenue</h1>
+
+<h2>À la une</h2>
+<div class="grid">
+    {% for anime in featured %}{% include 'anime/_card.html.twig' %}{% else %}<p class="muted">Aucun anime mis en avant.</p>{% endfor %}
+</div>
+
+<h2>Derniers ajouts</h2>
+<div class="grid">
+    {% for anime in latest %}{% include 'anime/_card.html.twig' %}{% else %}<p class="muted">Aucun anime pour l'instant.</p>{% endfor %}
+</div>
+{% endblock %}

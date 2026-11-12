@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Animes{% endblock %}
+
+{% block body %}
+<h1>Catalogue</h1>
+<form method="get">
+    <input type="search" name="q" value="{{ q }}" placeholder="Rechercher un titre">
+    <select name="genre">
+        <option value="">Tous les genres</option>
+        {% for genre in genres %}
+            <option value="{{ genre.id }}" {{ genre.id == currentGenre ? 'selected' }}>{{ genre.name }}</option>
+        {% endfor %}
+    </select>
+    <button>Filtrer</button>
+</form>
+<p class="muted">{{ animes|length }} résultat(s)</p>
+<div class="grid">
+    {% for anime in animes %}{% include 'anime/_card.html.twig' %}{% else %}<p>Aucun résultat.</p>{% endfor %}
+</div>
+{% endblock %}

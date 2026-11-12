@@ -1,0 +1,8 @@
+<div class="card">
+    {% if anime.posterImage %}<img src="{{ anime.posterImage }}" alt="">{% endif %}
+    <strong><a href="{{ path('app_anime_show', {id: anime.id}) }}">{{ anime.title }}</a></strong>
+    <div class="muted">
+        {{ anime.releaseYear ?? '?' }}{% if anime.studio %} · {{ anime.studio.name }}{% endif %}<br>
+        {{ anime.genres|map(g => g.name)|join(', ') }}
+    </div>
+</div>

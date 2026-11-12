@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ma liste{% endblock %}
+
+{% block body %}
+<h1>Ma liste</h1>
+{% if trackers is empty %}
+    <p>Ta liste est vide. <a href="{{ path('app_anime_index') }}">Parcourir le catalogue</a></p>
+{% else %}
+<table>
+    <tr><th>Anime</th><th>Statut</th><th>Progression</th><th>Mis à jour</th></tr>
+    {% for t in trackers %}
+    <tr>
+        <td><a href="{{ path('app_anime_show', {id: t.anime.id}) }}">{{ t.anime.title }}</a></td>
+        <td>{{ statuses[t.status] ?? t.status }}</td>
+        <td>{{ t.episodesWatched }} / {{ t.anime.episodesCount ?? '?' }}</td>
+        <td>{{ t.updatedAt|date('d/m/Y') }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<h2>Mes avis</h2>
+{% for review in reviews %}
+    <p><a href="{{ path('app_anime_show', {id: review.anime.id}) }}">{{ review.anime.title }}</a> — {{ review.rating }}/10{% if review.comment %} : {{ review.comment }}{% endif %}</p>
+{% else %}
+    <p class="muted">Aucun avis.</p>
+{% endfor %}
+{% endblock %}
