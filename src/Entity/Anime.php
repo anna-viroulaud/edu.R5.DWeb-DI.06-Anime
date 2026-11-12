@@ -16,6 +16,10 @@ class Anime
     #[ORM\Column]
     private ?int $id = null;
 
+    // Identifiant MyAnimeList (API Jikan) : sert à éviter les doublons à l'import
+    #[ORM\Column(nullable: true, unique: true)]
+    private ?int $mal_id = null;
+
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
@@ -86,6 +90,18 @@ class Anime
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getMalId(): ?int
+    {
+        return $this->mal_id;
+    }
+
+    public function setMalId(?int $mal_id): static
+    {
+        $this->mal_id = $mal_id;
+
+        return $this;
     }
 
     public function getTitle(): ?string
