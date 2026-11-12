@@ -3,60 +3,74 @@
 {% block title %}{{ anime.title }}{% endblock %}
 
 {% block body %}
-<h1>{{ anime.title }}</h1>
-{% if anime.posterImage %}<img src="{{ anime.posterImage }}" alt="" style="max-width:250px">{% endif %}
-<ul>
-    <li>Année : {{ anime.releaseYear ?? '?' }}</li>
-    <li>Épisodes : {{ anime.episodesCount ?? '?' }}</li>
-    <li>Studio : {{ anime.studio ? anime.studio.name : '?' }}</li>
-    <li>Genres :
-        {% for genre in anime.genres %}<a href="{{ path('app_anime_index', {genre: genre.id}) }}">{{ genre.name }}</a>{{ not loop.last ? ', ' }}{% else %}-{% endfor %}
-    </li>
-    <li>Note moyenne : {{ average is not null ? average|number_format(1) ~ '/10 (' ~ reviews|length ~ ' avis)' : 'pas encore noté' }}</li>
-</ul>
-<p>{{ anime.synopsis|nl2br }}</p>
-
-<h2>Ma liste</h2>
-{% if app.user %}
-    <form method="post" action="{{ path('app_anime_track', {id: anime.id}) }}">
-        <input type="hidden" name="_token" value="{{ csrf_token('track' ~ anime.id) }}">
-        <select name="status">
-            {% for key, label in statuses %}
-                <option value="{{ key }}" {{ tracker and tracker.status == key ? 'selected' }}>{{ label }}</option>
-            {% endfor %}
-        </select>
-        Épisodes vus :
-        <input type="number" name="episodes" min="0" {% if anime.episodesCount %}max="{{ anime.episodesCount }}"{% endif %} value="{{ tracker ? tracker.episodesWatched : 0 }}" style="width:5em">
-        <button name="action" value="save">{{ tracker ? 'Mettre à jour' : 'Ajouter à ma liste' }}</button>
-        {% if tracker %}<button name="action" value="remove">Retirer</button>{% endif %}
-    </form>
-{% else %}
-    <p><a href="{{ path('app_login') }}">Connecte-toi</a> pour suivre cet anime et laisser un avis.</p>
-{% endif %}
-
-<h2>Avis</h2>
-{% if app.user %}
-    <form method="post" action="{{ path('app_anime_review', {id: anime.id}) }}">
-        <input type="hidden" name="_token" value="{{ csrf_token('review' ~ anime.id) }}">
-        <label>Note (1-10) : <input type="number" name="rating" min="1" max="10" required value="{{ myReview ? myReview.rating }}"></label><br>
-        <textarea name="comment" rows="3" cols="50" placeholder="Ton avis">{{ myReview ? myReview.comment }}</textarea><br>
-        <button>{{ myReview ? 'Modifier mon avis' : 'Publier' }}</button>
-    </form>
-{% endif %}
-
-{% for review in reviews %}
-    <div class="card" style="margin-top:.5em">
-        <strong>{{ review.user.pseudo }}</strong> — {{ review.rating }}/10
-        <span class="muted">le {{ review.createdAt|date('d/m/Y') }}</span>
-        {% if review.comment %}<p>{{ review.comment|nl2br }}</p>{% endif %}
-        {% if app.user and review.user == app.user %}
-            <form class="inline" method="post" action="{{ path('app_review_delete', {id: review.id}) }}" onsubmit="return confirm('Supprimer ?')">
-                <input type="hidden" name="_token" value="{{ csrf_token('del-review' ~ review.id) }}">
-                <button>Supprimer</button>
-            </form>
-        {% endif %}
+<div class="anime-detail">
+    <div class="card-poster">
+        {% if anime.posterImage %}<img src="{{ anime.posterImage }}" alt="{{ anime.title }}">{% endif %}
     </div>
-{% else %}
-    <p class="muted">Aucun avis.</p>
-{% endfor %}
+
+    <div>
+        <span class="eyebrow">{{ anime.studio ? anime.studio.name : 'Studio inconnu' }}</span>
+        <h1>{{ anime.title }}</h1>
+        <ul class="info-list">
+            <li>Année : <strong>{{ anime.releaseYear ?? '?' }}</strong></li>
+            <li>Épisodes : <strong>{{ anime.episodesCount ?? '?' }}</strong></li>
+            <li>Genres :
+                {% for genre in anime.genres %}<a class="rating" href="{{ path('app_anime_index', {genre: genre.id}) }}">{{ genre.name }}</a>{{ not loop.last ? ', ' }}{% else %}-{% endfor %}
+            </li>
+            <li>Note moyenne :
+                <strong>{{ average is not null ? '★ ' ~ average|number_format(1) ~ '/10 (' ~ reviews|length ~ ' avis)' : 'pas encore noté' }}</strong>
+            </li>
+        </ul>
+        <p>{{ anime.synopsis|nl2br }}</p>
+
+        <div class="panel panel-accent">
+            <span class="eyebrow">Ma bibliothèque</span>
+            {% if app.user %}
+                <form method="post" action="{{ path('app_anime_track', {id: anime.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('track' ~ anime.id) }}">
+                    <select name="status">
+                        {% for key, label in statuses %}
+                            <option value="{{ key }}" {{ tracker and tracker.status == key ? 'selected' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    Épisodes vus :
+                    <input type="number" name="episodes" min="0" {% if anime.episodesCount %}max="{{ anime.episodesCount }}"{% endif %} value="{{ tracker ? tracker.episodesWatched : 0 }}" style="width:5em">
+                    <button name="action" value="save" class="btn-accent">{{ tracker ? 'Mettre à jour' : '+ Ajouter à ma liste' }}</button>
+                    {% if tracker %}<button name="action" value="remove" class="btn-outline">Retirer</button>{% endif %}
+                </form>
+            {% else %}
+                <p><a class="rating" href="{{ path('app_login') }}">Connecte-toi</a> pour suivre cet anime et laisser un avis.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="panel">
+    <span class="eyebrow">Communauté</span>
+    <h2>Avis</h2>
+    {% if app.user %}
+        <form method="post" action="{{ path('app_anime_review', {id: anime.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('review' ~ anime.id) }}">
+            <label>Note (1-10) : <input type="number" name="rating" min="1" max="10" required value="{{ myReview ? myReview.rating }}"></label><br><br>
+            <textarea name="comment" rows="3" placeholder="Ton avis">{{ myReview ? myReview.comment }}</textarea><br>
+            <button>{{ myReview ? 'Modifier mon avis' : 'Publier' }}</button>
+        </form>
+    {% endif %}
+
+    {% for review in reviews %}
+        <div class="review">
+            <strong>{{ review.user.pseudo }}</strong> · <span class="rating">★ {{ review.rating }}/10</span>
+            <span class="muted">· le {{ review.createdAt|date('d/m/Y') }}</span>
+            {% if review.comment %}<p>{{ review.comment|nl2br }}</p>{% endif %}
+            {% if app.user and review.user == app.user %}
+                <form class="inline" method="post" action="{{ path('app_review_delete', {id: review.id}) }}" onsubmit="return confirm('Supprimer ?')">
+                    <input type="hidden" name="_token" value="{{ csrf_token('del-review' ~ review.id) }}">
+                    <button class="btn-outline">Supprimer</button>
+                </form>
+            {% endif %}
+        </div>
+    {% else %}
+        <p class="muted">Aucun avis.</p>
+    {% endfor %}
+</div>
 {% endblock %}

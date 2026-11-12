@@ -1,29 +1,41 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ma liste{% endblock %}
+{% block title %}Ma bibliothèque{% endblock %}
 
 {% block body %}
-<h1>Ma liste</h1>
+<span class="eyebrow">Ma semaine</span>
+<h1>Ma bibliothèque</h1>
 {% if trackers is empty %}
-    <p>Ta liste est vide. <a href="{{ path('app_anime_index') }}">Parcourir le catalogue</a></p>
+    <p>Ta liste est vide. <a class="rating" href="{{ path('app_anime_index') }}">Parcourir le catalogue →</a></p>
 {% else %}
 <table>
     <tr><th>Anime</th><th>Statut</th><th>Progression</th><th>Mis à jour</th></tr>
     {% for t in trackers %}
     <tr>
-        <td><a href="{{ path('app_anime_show', {id: t.anime.id}) }}">{{ t.anime.title }}</a></td>
+        <td><a href="{{ path('app_anime_show', {id: t.anime.id}) }}"><strong>{{ t.anime.title }}</strong></a></td>
         <td>{{ statuses[t.status] ?? t.status }}</td>
-        <td>{{ t.episodesWatched }} / {{ t.anime.episodesCount ?? '?' }}</td>
-        <td>{{ t.updatedAt|date('d/m/Y') }}</td>
+        <td>
+            Épisode {{ t.episodesWatched }} sur {{ t.anime.episodesCount ?? '?' }}
+            {% if t.anime.episodesCount %}
+                <div class="progress"><span style="width: {{ (t.episodesWatched / t.anime.episodesCount * 100)|round }}%"></span></div>
+            {% endif %}
+        </td>
+        <td class="muted">{{ t.updatedAt|date('d/m/Y') }}</td>
     </tr>
     {% endfor %}
 </table>
 {% endif %}
 
-<h2>Mes avis</h2>
-{% for review in reviews %}
-    <p><a href="{{ path('app_anime_show', {id: review.anime.id}) }}">{{ review.anime.title }}</a> — {{ review.rating }}/10{% if review.comment %} : {{ review.comment }}{% endif %}</p>
-{% else %}
-    <p class="muted">Aucun avis.</p>
-{% endfor %}
+<div class="panel">
+    <h2>Mes avis</h2>
+    {% for review in reviews %}
+        <div class="review">
+            <a href="{{ path('app_anime_show', {id: review.anime.id}) }}"><strong>{{ review.anime.title }}</strong></a>
+            · <span class="rating">★ {{ review.rating }}/10</span>
+            {% if review.comment %}<p>{{ review.comment }}</p>{% endif %}
+        </div>
+    {% else %}
+        <p class="muted">Aucun avis.</p>
+    {% endfor %}
+</div>
 {% endblock %}

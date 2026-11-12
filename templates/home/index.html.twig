@@ -1,14 +1,31 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<h1>Bienvenue</h1>
+{% set hero = featured|first %}
+{% if hero %}
+    <section class="hero" {% if hero.posterImage %}style="background-image: url('{{ hero.posterImage }}')"{% endif %}>
+        <div>
+            <span class="eyebrow">L'anime de la saison</span>
+            <h1>{{ hero.title }}</h1>
+            {% if hero.synopsis %}<p>{{ hero.synopsis|length > 160 ? hero.synopsis|slice(0, 160) ~ '…' : hero.synopsis }}</p>{% endif %}
+            <div class="actions">
+                <a class="btn btn-light" href="{{ path('app_anime_show', {id: hero.id}) }}">Voir la fiche</a>
+            </div>
+        </div>
+    </section>
+{% endif %}
 
-<h2>À la une</h2>
+<div class="section-head">
+    <div><span class="eyebrow">À découvrir</span><h2>À la une</h2></div>
+    <a href="{{ path('app_anime_index') }}">Tout le catalogue →</a>
+</div>
 <div class="grid">
     {% for anime in featured %}{% include 'anime/_card.html.twig' %}{% else %}<p class="muted">Aucun anime mis en avant.</p>{% endfor %}
 </div>
 
-<h2>Derniers ajouts</h2>
+<div class="section-head">
+    <div><span class="eyebrow">Ajoutés récemment</span><h2>Derniers ajouts</h2></div>
+</div>
 <div class="grid">
     {% for anime in latest %}{% include 'anime/_card.html.twig' %}{% else %}<p class="muted">Aucun anime pour l'instant.</p>{% endfor %}
 </div>
