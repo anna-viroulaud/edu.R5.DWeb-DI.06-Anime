@@ -6,9 +6,7 @@ use App\Entity\Anime;
 use App\Entity\Review;
 use App\Form\AnimeType;
 use App\Repository\AnimeRepository;
-use App\Repository\GenreRepository;
 use App\Repository\ReviewRepository;
-use App\Repository\StudioRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,41 +15,12 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class AnimeController extends AbstractController
 {
-    // Catalogue avec filtres (genre, studio, année) et recherche par titre
+    // Catalogue : liste de tous les animes (non supprimés), triés par titre
     #[Route('/animes', name: 'app_anime_index')]
-    public function index(Request $request, AnimeRepository $animes, GenreRepository $genres, StudioRepository $studios): Response
+    public function index(AnimeRepository $animes): Response
     {
-        $q = $request->query->get('q', '');
-        $genreId = $request->query->getInt('genre');
-        $studioId = $request->query->getInt('studio');
-        $year = $request->query->getInt('year');
-
-        $qb = $animes->createQueryBuilder('a')
-            ->where('a.deleted_at IS NULL')
-            ->orderBy('a.title', 'ASC');
-
-        if ($q) {
-            $qb->andWhere('a.title LIKE :q')->setParameter('q', '%'.$q.'%');
-        }
-        if ($genreId) {
-            $qb->andWhere(':genre MEMBER OF a.genres')->setParameter('genre', $genreId);
-        }
-        if ($studioId) {
-            $qb->andWhere('a.studio = :studio')->setParameter('studio', $studioId);
-        }
-        if ($year) {
-            $qb->andWhere('a.release_year = :year')->setParameter('year', $year);
-        }
-
         return $this->render('anime/index.html.twig', [
-            'animes' => $qb->getQuery()->getResult(),
-            'genres' => $genres->findBy([], ['name' => 'ASC']),
-            'studios' => $studios->findBy([], ['name' => 'ASC']),
-            'years' => range((int) date('Y'), 1960),
-            'q' => $q,
-            'currentGenre' => $genreId,
-            'currentStudio' => $studioId,
-            'currentYear' => $year,
+            'animes' => $animes->findBy(['deleted_at' => null], ['title' => 'ASC']),
         ]);
     }
 

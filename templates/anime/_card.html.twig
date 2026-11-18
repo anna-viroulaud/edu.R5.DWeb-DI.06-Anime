@@ -1,8 +1,6 @@
 <a class="card" href="{{ path('app_anime_show', {id: anime.id}) }}">
     <div class="card-poster">
-        {% if anime.posterImage %}<img src="{{ anime.posterImage }}" alt="{{ anime.title }}">{% endif %}
-        {% if anime.isFeatured %}<span class="badge">★ À la une</span>{% endif %}
-    </div>
+        {% if anime.posterImage %}<img src="{{ anime.posterImage }}" alt="{{ anime.title }}">{% endif %}    </div>
     <div class="card-meta">{{ anime.studio ? anime.studio.name ~ ' · ' }}{{ anime.releaseYear ?? '?' }}</div>
     <div class="card-title">{{ anime.title }}</div>
     <div class="card-genres">{{ anime.genres|map(g => g.name)|join(', ') }}</div>

@@ -29,13 +29,8 @@
                     <a href="{{ path('app_home') }}">Accueil</a>
                     <a href="{{ path('app_anime_index') }}">Catalogue</a>                </nav>
                 <div class="nav-right">
-                    <form action="{{ path('app_anime_index') }}" method="get" style="margin:0">
-                        <input type="search" name="q" placeholder="Rechercher une œuvre">
-                    </form>
                     {% if app.user %}
-                        <a class="btn" href="{{ path('app_anime_new') }}">+ Ajouter une fiche</a>
-                        {% if is_granted('ROLE_ADMIN') %}<a href="{{ path('admin') }}">Admin</a>{% endif %}
-                        <span class="muted">{{ app.user.pseudo }}</span>
+                        <a class="btn" href="{{ path('app_anime_new') }}">+ Ajouter une fiche</a>                        <span class="muted">{{ app.user.pseudo }}</span>
                         <a href="{{ path('app_logout') }}">Déconnexion</a>
                     {% else %}
                         <a href="{{ path('app_login') }}">Connexion</a>

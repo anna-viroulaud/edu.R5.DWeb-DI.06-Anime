@@ -3,33 +3,8 @@
 {% block title %}Catalogue{% endblock %}
 
 {% block body %}
-<span class="eyebrow">Catalogue</span>
 <h1>Tous les animes</h1>
-<form method="get" class="filters">
-    <input type="search" name="q" value="{{ q }}" placeholder="Rechercher un titre">
-    <select name="genre">
-        <option value="">Tous les genres</option>
-        {% for genre in genres %}
-            <option value="{{ genre.id }}" {{ genre.id == currentGenre ? 'selected' }}>{{ genre.name }}</option>
-        {% endfor %}
-    </select>
-    <select name="studio">
-        <option value="">Tous les studios</option>
-        {% for studio in studios %}
-            <option value="{{ studio.id }}" {{ studio.id == currentStudio ? 'selected' }}>{{ studio.name }}</option>
-        {% endfor %}
-    </select>
-    <select name="year">
-        <option value="">Toutes les années</option>
-        {% for y in years %}
-            <option value="{{ y }}" {{ y == currentYear ? 'selected' }}>{{ y }}</option>
-        {% endfor %}
-    </select>
-    <button>Filtrer</button>
-    <a class="btn btn-outline" href="{{ path('app_anime_index') }}">Réinitialiser</a>
-</form>
-<p class="muted">{{ animes|length }} résultat(s)</p>
 <div class="grid">
-    {% for anime in animes %}{% include 'anime/_card.html.twig' %}{% else %}<p>Aucun résultat.</p>{% endfor %}
+    {% for anime in animes %}{% include 'anime/_card.html.twig' %}{% else %}<p>Aucun anime.</p>{% endfor %}
 </div>
 {% endblock %}
