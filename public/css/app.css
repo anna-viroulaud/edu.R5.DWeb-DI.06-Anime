@@ -179,13 +179,19 @@ form.inline { display: inline; }
 .review:first-of-type { border-top: none; }
 .rating { color: var(--accent); font-weight: 600; }
 
+/* ---------- Formulaire fiche anime ---------- */
+.form-panel { max-width: 720px; margin: 0 auto; }
+.anime-form > div { margin-bottom: 14px; }
+.anime-form label { display: block; font-size: .85rem; font-weight: 500; margin-bottom: 4px; }
+.anime-form input:not([type="checkbox"]), .anime-form select, .anime-form textarea { width: 100%; max-width: none; }
+.anime-form ul { color: #c0392b; font-size: .85rem; padding-left: 1em; margin: 4px 0; } /* erreurs */
+.actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 1em 0; }
+
 /* ---------- Tableau Ma liste ---------- */
 table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius); overflow: hidden; }
 th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); }
 th { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
 tr:last-child td { border-bottom: none; }
-.progress { height: 4px; background: var(--border); border-radius: 4px; margin-top: 6px; width: 120px; }
-.progress span { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
 
 /* ---------- Pages auth (login / register) ---------- */
 .auth-box {

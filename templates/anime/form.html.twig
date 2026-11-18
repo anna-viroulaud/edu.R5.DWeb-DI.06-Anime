@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ anime ? 'Modifier la fiche' : 'Ajouter une fiche' }}{% endblock %}
+
+{% block body %}
+<div class="panel form-panel">
+    <h1>{{ anime ? 'Modifier la fiche' : 'Ajouter une fiche' }}</h1>
+
+    {{ form_start(form, {attr: {class: 'anime-form'}}) }}
+        {{ form_widget(form) }}
+        <button class="btn-accent">Enregistrer</button>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

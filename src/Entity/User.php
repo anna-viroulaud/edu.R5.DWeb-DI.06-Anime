@@ -195,7 +195,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->inactivated;
     }
 
-    public function setInactivated(\DateTimeImmutable $inactivated): static
+    public function setInactivated(?\DateTimeImmutable $inactivated): static
     {
         $this->inactivated = $inactivated;
 
@@ -207,7 +207,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->deleted_at;
     }
 
-    public function setDeletedAt(\DateTimeImmutable $deleted_at): static
+    public function setDeletedAt(?\DateTimeImmutable $deleted_at): static
     {
         $this->deleted_at = $deleted_at;
 

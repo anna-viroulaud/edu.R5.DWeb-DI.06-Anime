@@ -27,6 +27,7 @@ class AnimeCrudController extends AbstractCrudController
             TextareaField::new('synopsis'),
             IntegerField::new('release_year'),
             IntegerField::new('episodes_count'),
+            TextField::new('poster_image', "URL de l'affiche")->hideOnIndex(),
             BooleanField::new('is_featured'),
             AssociationField::new('studio'),
             AssociationField::new('genres'),
@@ -39,7 +40,7 @@ class AnimeCrudController extends AbstractCrudController
         if ($entityInstance instanceof Anime && !$entityInstance->getCreatedBy()) {
             $entityInstance->setCreatedBy($this->getUser());
         }
-        
+
         parent::persistEntity($entityManager, $entityInstance);
     }
 }
