@@ -136,7 +136,6 @@ class AnimeController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
         $user = $this->getUser();
 
-        // Un seul avis par membre et par anime : on reprend l'ancien s'il existe
         $review = $reviews->findOneBy(['anime' => $anime, 'user' => $user]);
         if (!$review) {
             $review = new Review();
@@ -144,7 +143,7 @@ class AnimeController extends AbstractController
             $review->setAnime($anime);
         }
 
-        $review->setRating($request->request->getInt('rating'));
+        $review->setRating(max(1, min(5, (int) $request->request->get('rating'))));
         $review->setComment($request->request->get('comment'));
         $review->setCreatedAt(new \DateTimeImmutable());
 
@@ -160,7 +159,6 @@ class AnimeController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
         $user = $this->getUser();
 
-        // Un seul suivi par membre et par anime : on reprend l'ancien s'il existe
         $tracker = $trackers->findOneBy(['anime' => $anime, 'user' => $user]);
         if (!$tracker) {
             $tracker = new Tracker();
@@ -168,7 +166,6 @@ class AnimeController extends AbstractController
             $tracker->setAnime($anime);
         }
 
-        // Statut inconnu : on met "À voir"
         $status = $request->request->getString('status');
         if (!isset(Tracker::STATUSES[$status])) {
             $status = 'plan_to_watch';
