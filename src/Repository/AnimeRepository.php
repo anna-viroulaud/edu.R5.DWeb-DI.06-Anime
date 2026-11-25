@@ -16,7 +16,6 @@ class AnimeRepository extends ServiceEntityRepository
         parent::__construct($registry, Anime::class);
     }
 
-    // Les animes du catalogue ; un filtre à 0 est ignoré
     public function findByFilters(int $genre, int $studio, int $year): array
     {
         $qb = $this->createQueryBuilder('a')
@@ -36,7 +35,6 @@ class AnimeRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    // Les années présentes dans le catalogue, pour la liste déroulante
     public function findYears(): array
     {
         return $this->createQueryBuilder('a')

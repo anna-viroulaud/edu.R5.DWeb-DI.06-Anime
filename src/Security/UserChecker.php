@@ -8,7 +8,6 @@ use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusExce
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-// Symfony l'appelle à chaque connexion (déclaré dans security.yaml)
 class UserChecker implements UserCheckerInterface
 {
     public function checkPreAuth(UserInterface $user): void

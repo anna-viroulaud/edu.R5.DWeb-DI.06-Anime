@@ -16,7 +16,6 @@ class Anime
     #[ORM\Column]
     private ?int $id = null;
 
-    // Identifiant MyAnimeList (API Jikan) : sert à éviter les doublons à l'import
     #[ORM\Column(nullable: true, unique: true)]
     private ?int $mal_id = null;
 
@@ -47,14 +46,10 @@ class Anime
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $deleted_at = null;
 
-    // Le studio pointe bien vers l'entité Studio (et non User)
-    // SET NULL : si le studio est supprimé, l'anime reste, sans studio
     #[ORM\ManyToOne(inversedBy: 'animes')]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?Studio $studio = null;
 
-    // L'utilisateur qui a créé l'anime
-    // SET NULL : si l'utilisateur est supprimé, sa fiche reste, sans auteur
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?User $createdBy = null;
@@ -68,14 +63,12 @@ class Anime
     /**
      * @var Collection<int, Review>
      */
-    // cascade remove : supprimer l'anime supprime aussi ses notes
     #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'anime', cascade: ['remove'])]
     private Collection $reviews;
 
     /**
      * @var Collection<int, Tracker>
      */
-    // cascade remove : supprimer l'anime supprime aussi ses suivis
     #[ORM\OneToMany(targetEntity: Tracker::class, mappedBy: 'anime', cascade: ['remove'])]
     private Collection $trackers;
 

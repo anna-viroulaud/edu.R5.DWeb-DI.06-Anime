@@ -56,14 +56,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Review>
      */
-    // cascade remove : supprimer l'utilisateur supprime aussi ses notes
     #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'user', cascade: ['remove'])]
     private Collection $reviews;
 
     /**
      * @var Collection<int, Tracker>
      */
-    // cascade remove : supprimer l'utilisateur supprime aussi ses suivis
     #[ORM\OneToMany(targetEntity: Tracker::class, mappedBy: 'user', cascade: ['remove'])]
     private Collection $trackers;
 
@@ -114,7 +112,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
@@ -204,7 +201,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    // Bloqué = la date "inactivated" est remplie
     public function isBlocked(): bool
     {
         return $this->inactivated !== null;
@@ -262,7 +258,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeReview(Review $review): static
     {
         if ($this->reviews->removeElement($review)) {
-            // set the owning side to null (unless already changed)
             if ($review->getUser() === $this) {
                 $review->setUser(null);
             }
@@ -292,7 +287,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeTracker(Tracker $tracker): static
     {
         if ($this->trackers->removeElement($tracker)) {
-            // set the owning side to null (unless already changed)
             if ($tracker->getUser() === $this) {
                 $tracker->setUser(null);
             }

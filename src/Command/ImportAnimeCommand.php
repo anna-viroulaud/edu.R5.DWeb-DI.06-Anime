@@ -29,7 +29,6 @@ class ImportAnimeCommand extends Command
 {
     private const API = 'https://graphql.anilist.co';
 
-    // Requête GraphQL : on demande uniquement les champs dont nos entités ont besoin
     private const QUERY = <<<'GRAPHQL'
         query ($page: Int, $perPage: Int, $search: String) {
           Page(page: $page, perPage: $perPage) {
@@ -48,7 +47,6 @@ class ImportAnimeCommand extends Command
         }
         GRAPHQL;
 
-    /** Caches pour ne pas recréer deux fois le même studio/genre pendant l'import */
     private array $studioCache = [];
     private array $genreCache = [];
 
@@ -90,7 +88,7 @@ class ImportAnimeCommand extends Command
                 ],
             ]);
 
-            if ($response->getStatusCode() === 429) { // trop de requêtes → on attend et on réessaie
+            if ($response->getStatusCode() === 429) { 
                 $io->warning('Limite atteinte, pause de 60 s…');
                 sleep(60);
                 --$page;
@@ -135,7 +133,7 @@ class ImportAnimeCommand extends Command
             if (!$data['pageInfo']['hasNextPage']) {
                 break;
             }
-            sleep(1); // on reste poli avec l'API (limite ~30 requêtes/minute)
+            sleep(1);
         }
 
         $io->success("Import terminé : $created créé(s), $updated mis à jour.");
