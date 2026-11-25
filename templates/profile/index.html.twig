@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil{% endblock %}
+
+{% block body %}
+<h1>Profil de {{ app.user.pseudo }}</h1>
+<table>
+    <tr><th>Anime</th><th>Statut</th><th>Progression</th></tr>
+    {# on n'affiche pas les fiches supprimées #}
+    {% for tracker in trackers|filter(t => t.anime.deletedAt is null) %}
+        <tr>
+            <td><a href="{{ path('app_anime_show', {id: tracker.anime.id}) }}">{{ tracker.anime.title }}</a></td>
+            <td>{{ statuses[tracker.status] ?? tracker.status }}</td>
+            <td>{% if tracker.status == 'watching' %}{{ tracker.episodesWatched }}/{{ tracker.anime.episodesCount ?? '?' }} épisodes vus{% else %}-{% endif %}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="3">Tu ne suis aucun anime.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -27,7 +27,9 @@
                 <a class="logo" href="{{ path('app_home') }}"><span class="logo-mark">A</span> AniWiki</a>
                 <nav class="nav-links">
                     <a href="{{ path('app_home') }}">Accueil</a>
-                    <a href="{{ path('app_anime_index') }}">Catalogue</a>                </nav>
+                    <a href="{{ path('app_anime_index') }}">Catalogue</a>
+                    {% if app.user %}<a href="{{ path('app_profile') }}">Mon profil</a>{% endif %}
+                </nav>
                 <div class="nav-right">
                     {% if app.user %}
                         <a class="btn" href="{{ path('app_anime_new') }}">+ Ajouter une fiche</a>                        <span class="muted">{{ app.user.pseudo }}</span>

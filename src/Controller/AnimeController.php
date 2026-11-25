@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Anime;
 use App\Entity\Review;
+use App\Entity\Tracker;
 use App\Form\AnimeType;
 use App\Repository\AnimeRepository;
 use App\Repository\ReviewRepository;
+use App\Repository\TrackerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,9 +26,8 @@ class AnimeController extends AbstractController
         ]);
     }
 
-    // Fiche détail + note moyenne
     #[Route('/animes/{id}', name: 'app_anime_show', requirements: ['id' => '\d+'])]
-    public function show(Anime $anime, ReviewRepository $reviews): Response
+    public function show(Anime $anime, ReviewRepository $reviews, TrackerRepository $trackers): Response
     {
         if ($anime->getDeletedAt()) {
             throw $this->createNotFoundException();
@@ -43,11 +44,19 @@ class AnimeController extends AbstractController
             $average = $total / count($animeReviews);
         }
 
+        // Le suivi du membre connecté (null s'il n'en a pas ou s'il n'est pas connecté)
+        $tracker = null;
+        if ($this->getUser()) {
+            $tracker = $trackers->findOneBy(['anime' => $anime, 'user' => $this->getUser()]);
+        }
+
         return $this->render('anime/show.html.twig', [
             'anime' => $anime,
             'reviews' => $animeReviews,
             'average' => $average,
             'canEdit' => $this->canEdit($anime),
+            'tracker' => $tracker,
+            'statuses' => Tracker::STATUSES,
         ]);
     }
 
@@ -127,6 +136,48 @@ class AnimeController extends AbstractController
         $review->setCreatedAt(new \DateTimeImmutable());
 
         $em->persist($review);
+        $em->flush();
+
+        return $this->redirectToRoute('app_anime_show', ['id' => $anime->getId()]);
+    }
+
+    #[Route('/animes/{id}/track', name: 'app_anime_track', methods: ['POST'])]
+    public function track(Anime $anime, Request $request, TrackerRepository $trackers, EntityManagerInterface $em): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $user = $this->getUser();
+
+        // Un seul suivi par membre et par anime : on reprend l'ancien s'il existe
+        $tracker = $trackers->findOneBy(['anime' => $anime, 'user' => $user]);
+        if (!$tracker) {
+            $tracker = new Tracker();
+            $tracker->setUser($user);
+            $tracker->setAnime($anime);
+        }
+
+        // Statut inconnu : on met "À voir"
+        $status = $request->request->getString('status');
+        if (!isset(Tracker::STATUSES[$status])) {
+            $status = 'plan_to_watch';
+        }
+
+        // Épisodes vus : 0 si "À voir", le nombre saisi si "En cours", tous si "Terminé"
+        $total = $anime->getEpisodesCount();
+        $episodes = 0;
+        if ($status === 'watching') {
+            $episodes = max(0, $request->request->getInt('episodes'));
+            if ($total) {
+                $episodes = min($episodes, $total); // jamais plus que le total
+            }
+        } elseif ($status === 'completed') {
+            $episodes = $total ?? 0;
+        }
+
+        $tracker->setStatus($status);
+        $tracker->setEpisodesWatched($episodes);
+        $tracker->setUpdatedAt(new \DateTimeImmutable());
+
+        $em->persist($tracker);
         $em->flush();
 
         return $this->redirectToRoute('app_anime_show', ['id' => $anime->getId()]);

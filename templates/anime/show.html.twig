@@ -36,6 +36,29 @@
     </div>
 </div>
 
+{% if app.user %}
+<div class="panel">
+    <h2>Ma liste</h2>
+    {% if tracker %}
+        <p>
+            <strong>{{ statuses[tracker.status] ?? tracker.status }}</strong>
+            {% if tracker.status == 'watching' %}· {{ tracker.episodesWatched }}/{{ anime.episodesCount ?? '?' }} épisodes vus{% endif %}
+        </p>
+    {% endif %}
+    <form method="post" action="{{ path('app_anime_track', {id: anime.id}) }}">
+        <select name="status">
+            {% for key, label in statuses %}
+                <option value="{{ key }}" {{ tracker and tracker.status == key ? 'selected' }}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <label>Épisodes vus (si « En cours ») :
+            <input type="number" name="episodes" min="0" {% if anime.episodesCount %}max="{{ anime.episodesCount }}"{% endif %} value="{{ tracker ? tracker.episodesWatched : 0 }}">
+        </label>
+        <button>{{ tracker ? 'Mettre à jour' : 'Ajouter à ma liste' }}</button>
+    </form>
+</div>
+{% endif %}
+
 <div class="panel">
     <h2>Notes</h2>
     {% if app.user %}

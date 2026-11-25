@@ -31,6 +31,18 @@ class Tracker
     #[ORM\JoinColumn(nullable: false)]
     private ?Anime $anime = null;
 
+    // Statuts possibles : clé = enregistrée en base, valeur = affichée à l'écran
+    public const STATUSES = [
+        'plan_to_watch' => 'À voir',
+        'watching' => 'En cours',
+        'completed' => 'Terminé',
+    ];
+
+    public function __construct()
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
