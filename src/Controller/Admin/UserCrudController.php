@@ -44,6 +44,7 @@ class UserCrudController extends AbstractCrudController
 
             ArrayField::new('roles'),
             BooleanField::new('is_verified'),
+            BooleanField::new('blocked', 'Bloqué'),
             DateTimeField::new('created_at')->hideOnForm(),
             DateTimeField::new('cgu_validated_at')->hideOnForm(),
         ];
@@ -60,6 +61,12 @@ class UserCrudController extends AbstractCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->hashPassword($entityInstance);
+
+        // Un admin ne peut pas se bloquer lui-même
+        if ($entityInstance === $this->getUser()) {
+            $entityInstance->setBlocked(false);
+        }
+
         parent::updateEntity($entityManager, $entityInstance);
     }
 

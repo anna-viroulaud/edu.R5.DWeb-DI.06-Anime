@@ -7,7 +7,9 @@ use App\Entity\Review;
 use App\Entity\Tracker;
 use App\Form\AnimeType;
 use App\Repository\AnimeRepository;
+use App\Repository\GenreRepository;
 use App\Repository\ReviewRepository;
+use App\Repository\StudioRepository;
 use App\Repository\TrackerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,12 +19,23 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class AnimeController extends AbstractController
 {
-    // Catalogue : liste de tous les animes (non supprimés), triés par titre
+    // Catalogue : liste des animes (non supprimés), avec filtres genre / studio / année
     #[Route('/animes', name: 'app_anime_index')]
-    public function index(AnimeRepository $animes): Response
+    public function index(Request $request, AnimeRepository $animes, GenreRepository $genres, StudioRepository $studios): Response
     {
+        // Valeurs choisies dans l'URL, ex : /animes?genre=3&year=2023 (0 = pas de filtre)
+        $genre = (int) $request->query->get('genre');
+        $studio = (int) $request->query->get('studio');
+        $year = (int) $request->query->get('year');
+
         return $this->render('anime/index.html.twig', [
-            'animes' => $animes->findBy(['deleted_at' => null], ['title' => 'ASC']),
+            'animes' => $animes->findByFilters($genre, $studio, $year),
+            'genres' => $genres->findBy([], ['name' => 'ASC']),
+            'studios' => $studios->findBy([], ['name' => 'ASC']),
+            'years' => $animes->findYears(),
+            'currentGenre' => $genre,
+            'currentStudio' => $studio,
+            'currentYear' => $year,
         ]);
     }
 
@@ -165,7 +178,7 @@ class AnimeController extends AbstractController
         $total = $anime->getEpisodesCount();
         $episodes = 0;
         if ($status === 'watching') {
-            $episodes = max(0, $request->request->getInt('episodes'));
+            $episodes = max(0, (int) $request->request->get('episodes'));
             if ($total) {
                 $episodes = min($episodes, $total); // jamais plus que le total
             }

@@ -48,11 +48,15 @@ class Anime
     private ?\DateTimeImmutable $deleted_at = null;
 
     // Le studio pointe bien vers l'entité Studio (et non User)
+    // SET NULL : si le studio est supprimé, l'anime reste, sans studio
     #[ORM\ManyToOne(inversedBy: 'animes')]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?Studio $studio = null;
 
     // L'utilisateur qui a créé l'anime
+    // SET NULL : si l'utilisateur est supprimé, sa fiche reste, sans auteur
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?User $createdBy = null;
 
     /**

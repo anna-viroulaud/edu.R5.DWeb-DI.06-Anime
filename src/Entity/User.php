@@ -56,13 +56,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Review>
      */
-    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'user')]
+    // cascade remove : supprimer l'utilisateur supprime aussi ses notes
+    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'user', cascade: ['remove'])]
     private Collection $reviews;
 
     /**
      * @var Collection<int, Tracker>
      */
-    #[ORM\OneToMany(targetEntity: Tracker::class, mappedBy: 'user')]
+    // cascade remove : supprimer l'utilisateur supprime aussi ses suivis
+    #[ORM\OneToMany(targetEntity: Tracker::class, mappedBy: 'user', cascade: ['remove'])]
     private Collection $trackers;
 
     public function __construct()
@@ -198,6 +200,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setInactivated(?\DateTimeImmutable $inactivated): static
     {
         $this->inactivated = $inactivated;
+
+        return $this;
+    }
+
+    // Bloqué = la date "inactivated" est remplie
+    public function isBlocked(): bool
+    {
+        return $this->inactivated !== null;
+    }
+
+    public function setBlocked(bool $blocked): static
+    {
+        $this->inactivated = $blocked ? new \DateTimeImmutable() : null;
 
         return $this;
     }
