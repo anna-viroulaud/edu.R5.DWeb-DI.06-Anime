@@ -29,7 +29,7 @@
                 {% for genre in anime.genres %}{{ genre.name }}{{ not loop.last ? ', ' }}{% else %}-{% endfor %}
             </li>
             <li>Note moyenne :
-                <strong>{{ average is not null ? average|number_format(1) ~ '/10 (' ~ reviews|length ~ ' avis)' : 'pas encore noté' }}</strong>
+                <strong>{{ average is not null ? average|number_format(1) ~ '/5 (' ~ reviews|length ~ ' avis)' : 'pas encore noté' }}</strong>
             </li>
         </ul>
         <p>{{ anime.synopsis|nl2br }}</p>
@@ -40,7 +40,7 @@
     <h2>Notes</h2>
     {% if app.user %}
         <form method="post" action="{{ path('app_anime_review', {id: anime.id}) }}">
-            <label>Ta note (1-10) : <input type="number" name="rating" min="1" max="10" required></label><br><br>
+            <label>Ta note (1-5) : <input type="number" name="rating" min="1" max="5" required></label><br><br>
             <textarea name="comment" rows="3" placeholder="Un commentaire (facultatif)"></textarea><br>
             <button>Noter</button>
         </form>
@@ -50,7 +50,7 @@
 
     {% for review in reviews %}
         <div class="review">
-            <strong>{{ review.user.pseudo }}</strong> · <span class="rating">{{ review.rating }}/10</span>
+            <strong>{{ review.user.pseudo }}</strong> · <span class="rating">{{ review.rating }}/5</span>
             {% if review.comment %}<p>{{ review.comment|nl2br }}</p>{% endif %}
         </div>
     {% else %}

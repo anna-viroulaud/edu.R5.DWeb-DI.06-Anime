@@ -64,13 +64,15 @@ class Anime
     /**
      * @var Collection<int, Review>
      */
-    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'anime')]
+    // cascade remove : supprimer l'anime supprime aussi ses notes
+    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'anime', cascade: ['remove'])]
     private Collection $reviews;
 
     /**
      * @var Collection<int, Tracker>
      */
-    #[ORM\OneToMany(targetEntity: Tracker::class, mappedBy: 'anime')]
+    // cascade remove : supprimer l'anime supprime aussi ses suivis
+    #[ORM\OneToMany(targetEntity: Tracker::class, mappedBy: 'anime', cascade: ['remove'])]
     private Collection $trackers;
 
     public function __construct()
